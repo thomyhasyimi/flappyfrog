@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Frog</title>
+</head>
+<body>
+    <h3>Score: <span id="score">0</span></h3>
+    <canvas id="world" width="500" height="500" style="border: 1px solid black;"></canvas>
+    <button id="btnPlay" onclick="playGame()">Play Game</button>
+
+    <script>
+        //setup canvas
+        let canvas = document.getElementById("world");
+        let context = canvas.getContext("2d");
+        let width = canvas.width;
+        let height = canvas.height;
+        let vy=10; //kecepatan awal sumbu y (gravitasi)
+        let y = height/2;
+        let x = width/4;
+        let jarakantarpipa = 150;
+        let lebarpipa = 50;
+        let kecepatanpipa = 2;
+        let menang = true;
+        let score = parseInt(document.getElementById("score").innerText);
+
+        let pipa = [
+            [400, Math.floor(Math.random() * 150) + 50, 0],
+            [500, Math.floor(Math.random() * 150) + 50, 0],
+            [600, Math.floor(Math.random() * 150) + 50, 0],
+            [700, Math.floor(Math.random() * 150) + 50, 0],
+            [800, Math.floor(Math.random() * 150) + 50, 0],
+            [900, Math.floor(Math.random() * 150) + 50, 0],
+        ]
+
+        //import image
+        let frog = new Image();
+        frog.src = "frog.png";
+        wFrog = 78;
+        hFrog = 50;
+
+        //FPS
+        function playGame(){
+            setInterval(game, 1000/60);
+            window.addEventListener("click", jump);
+            window.addEventListener("keypress", function(event){
+                if(event.keyCode == 32){
+                    jump();
+                }
+            })
+
+        function jump(){
+            //setup sound
+            let jumping = new Audio();
+            jumping.src = "jump.mp3";
+            vy= -19;
+            audio.play();
+           }    
+        }
+    
+        function game(){
+            context.clearRect(0,0,width,height);
+
+            if(menang == true){
+                for(i = 0; i < pipa.length; i ++){
+                    context.fillStyle = "black";
+                    context.fillRect(pipa[i][0], 0, lebarpipa, pipa[i][1]); //Pipa atas
+                    context.fillRect(pipa[i][0], pipa[i][1] + jarakantarpipa, lebarpipa, (height - jarakantarpipa) - pipa[i][1]);
+
+                    if(pipa[i][0] > (-1 * lebarpipa)){
+                    pipa[i][0] = pipa[i][0] - kecepatanpipa;
+                    }
+                    else if(pipa[i][0] == (-1 * lebarpipa)){
+                        pipa[i][0] = width + lebarpipa;
+                    }
+                    // pengecekan tabrakan
+                    if(pipa[i][0] < (x + wFrog) && pipa[i][0] > (x - wFrog) && 
+                        (pipa [i][1] > y || pipa[i][1] + jarakantarpipa <= y + hFrog - 10)){
+                            menang = false;
+
+                        alert(`Game Over! Your Score: ${score} Do you want to play again?`);
+
+                        location.reload();
+                    }
+                    else{
+                        score += 1;
+                        document.getElementById("score").innerText = score;
+                    }    
+                }    
+            }
+
+            vy = vy + 1;
+            y = y + vy;
+
+            if(y >= (height-100)){
+             jump();
+            }
+            context.drawImage(frog,x,y,wFrog,hFrog);
+    }
+
+    </script>
+</body>
+</html>
